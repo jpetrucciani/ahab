@@ -30,4 +30,4 @@ GLOBAL OPTIONS:
 
 ## demo
 
-![ahab_demo](https://cobi.dev/static/img/github/gif/ahab.gif)
+![ahab_demo](https://cobi.dev/static/img/github/gif/ahab-0.0.2.gif)

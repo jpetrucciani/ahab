@@ -12,11 +12,14 @@ import (
 )
 
 type DockerTailer struct {
-	cli   *client.Client
-	since string
+	cli        *client.Client
+	since      string
+	until      string
+	follow     bool
+	timestamps bool
 }
 
-func NewLocalDockerTailer(since string) (Tailer, error) {
+func NewLocalDockerTailer(since string, until string, follow bool, timestamps bool) (Tailer, error) {
 	cli, err := client.NewClientWithOpts(
 		client.FromEnv,
 		client.WithAPIVersionNegotiation(),
@@ -25,8 +28,11 @@ func NewLocalDockerTailer(since string) (Tailer, error) {
 		return nil, err
 	}
 	return &DockerTailer{
-		cli:   cli,
-		since: since,
+		cli:        cli,
+		since:      since,
+		until:      until,
+		follow:     follow,
+		timestamps: timestamps,
 	}, nil
 }
 
@@ -34,8 +40,10 @@ func (t *DockerTailer) Tail(c string, writer io.Writer) error {
 	logs, err := t.cli.ContainerLogs(context.Background(), c, containertypes.LogsOptions{
 		ShowStdout: true,
 		ShowStderr: true,
-		Follow:     true,
+		Follow:     t.follow,
+		Timestamps: t.timestamps,
 		Since:      t.since,
+		Until:      t.until,
 	})
 	if err != nil {
 		log.Fatal(err)

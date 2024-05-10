@@ -3,13 +3,13 @@ package utils
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"hash/fnv"
 
 	"github.com/fatih/color"
 )
 
+// 91,92,93,94,95,96,97
 var COLORS = []color.Attribute{
 	color.FgHiRed,
 	color.FgHiGreen,
@@ -22,18 +22,14 @@ var COLORS = []color.Attribute{
 
 func init() {
 	log.SetFlags(0)
-	log.SetOutput(new(timestampedLogWriter))
+	log.SetOutput(new(baseLogWriter))
 }
 
-type timestampedLogWriter struct {
+type baseLogWriter struct {
 }
 
-func (timestampedLogWriter) Write(bytes []byte) (int, error) {
-	return fmt.Printf("%s %s", formatTime(time.Now().UTC()), string(bytes))
-}
-
-func formatTime(time time.Time) string {
-	return time.Format("2006-01-02 15:04:05.000")
+func (baseLogWriter) Write(bytes []byte) (int, error) {
+	return fmt.Print(string(bytes))
 }
 
 type LogWriter struct {
@@ -58,7 +54,7 @@ func NewLogWriter(name string) *LogWriter {
 }
 
 func (w *LogWriter) Write(b []byte) (int, error) {
-	log.Printf(w.format(b))
+	log.Print(w.format(b))
 	return len(b), nil
 }
 
